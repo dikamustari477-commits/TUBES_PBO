@@ -1,6 +1,7 @@
 # TUBES_PBO
 
-Tugas Besar mata kuliah Pemrograman Berorientasi Objek berbasis Java, dikerjakan oleh kelompok 5  yang beranggotakan (11251078) Remarsya Fredericha, (11251033) Muhammad Khayru Rizki, dan (11251063) Andika Jusuf Jeremy Mustari. 
+Tugas Besar mata kuliah Pemrograman Berorientasi Objek berbasis Java, dikerjakan oleh kelompok 5  yang beranggotakan ((11251033) Muhammad Khayru Rizki, (11251063) Andika Jusuf Jeremy Mustari, dan 11251078) Remarsya Fredericha.
 
-- Selalu lakukan git pull dan git push setiap akan dan selesai ngoding.
-- PLS JANGAN DIUBAH URUTAN NAMANYA
+Tugas Besar dengan tema Sistem pemesanan jasa jahit
+
+https://drive.google.com/drive/folders/1PkSPErWp6OICZbVyjJeR24c2U4ia-nR6?usp=sharing
