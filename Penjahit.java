@@ -13,6 +13,31 @@ public class Penjahit extends javax.swing.JFrame {
      */
     public Penjahit() {
         initComponents();
+        tampilkanData();
+    }
+    
+    private void tampilkanData() {
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        
+        model.setRowCount(0);
+        
+        for (ModelPelanggan p : DataStore.listPelanggan) {
+            Object[] row = {
+                p.getNama(),
+                p.getNoHp(),
+                p.getAlamat(),
+                "-",          // Detail Pesanan (bisa diisi manual atau default strip dulu)
+                "Pending",    // Status Pesanan awal
+                "Belum Bayar" // Status Pembayaran awal
+            };
+            model.addRow(row); // Masukkan data pelanggan ke tabel penjahit
+        }
+        
+        javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
+        for (int i = 0; i < jTable1.getColumnCount(); i++) {
+            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
     /**

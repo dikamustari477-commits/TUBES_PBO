@@ -30,3 +30,8 @@
 
     (11251063) Andika Jusuf Jeremy Mustari
         - Create README.txt
+        
+        (20:42:09 - 21:37:13)
+
+    (11251063) Andika Jusuf Jeremy Mustari
+        - Fix the tables in the Pelanggan.java and Penjahit.java GUI so that they can display registered data, and change the text align to center. (Fix DataStore.java so that Penjahit.java can display customer registered data. This system also happen in Pelanggan.java)

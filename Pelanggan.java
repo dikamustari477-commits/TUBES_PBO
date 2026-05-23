@@ -13,6 +13,34 @@ public class Pelanggan extends javax.swing.JFrame {
      */
     public Pelanggan() {
         initComponents();
+        tampilkanData();
+    }
+    
+    private void tampilkanData() {
+        // model 
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+
+        model.setRowCount(0);
+        
+        // Looping untuk mengambil semua data dari DataStore.listPelanggan
+        for (ModelPelanggan p : DataStore.listPelanggan) {
+            Object[] row = {
+                p.getNama(),
+                p.getNoHp(),
+                p.getAlamat(),
+                "-", // Detail Pesanan 
+                "Pending", 
+                "Belum Bayar" 
+            };
+            model.addRow(row); // Masukkan data ke baris tabel
+        }
+        
+        javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER); 
+        for (int i = 0; i < jTable1.getColumnCount(); i++) {
+            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+        
     }
 
     /**
@@ -122,7 +150,8 @@ public class Pelanggan extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        tampilkanData(); // panggil data
+        javax.swing.JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
