@@ -1,46 +1,46 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package tubes_pbo;
 
 public class Pelanggan extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Pelanggan.class.getName());
+    private ModelPelanggan pelangganLogin;
+    public Pelanggan(ModelPelanggan p) {
+        initComponents();
+        this.pelangganLogin = p; 
+        tampilkanData();
+    }
 
-    /**
-     * Creates new form pelanggan
-     */
     public Pelanggan() {
         initComponents();
         tampilkanData();
     }
     
+// ISI
     private void tampilkanData() {
-        // model 
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
-
         model.setRowCount(0);
         
-        // Looping untuk mengambil semua data dari DataStore.listPelanggan
-        for (ModelPelanggan p : DataStore.listPelanggan) {
-            Object[] row = {
-                p.getNama(),
-                p.getNoHp(),
-                p.getAlamat(),
-                "-", // Detail Pesanan 
-                "Pending", 
-                "Belum Bayar" 
-            };
-            model.addRow(row); // Masukkan data ke baris tabel
-        }
-        
+        if (pelangganLogin == null) return;
+
+        Object[] row = {
+            pelangganLogin.getNama(),
+            pelangganLogin.getNoHp(),
+            pelangganLogin.getAlamat(),
+            "-",
+            "Rp" +  pelangganLogin.getTotalHarga(),
+            pelangganLogin.getStatusPesanan(),  
+            pelangganLogin.getStatusPembayaran() 
+        };
+        model.addRow(row); 
+
         javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER); 
+        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
         for (int i = 0; i < jTable1.getColumnCount(); i++) {
             jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
         
+        ((javax.swing.table.DefaultTableCellRenderer) jTable1.getTableHeader().getDefaultRenderer())
+                .setHorizontalAlignment(javax.swing.JLabel.CENTER);
     }
 
     /**
@@ -56,7 +56,6 @@ public class Pelanggan extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -65,15 +64,15 @@ public class Pelanggan extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Pembayaran"
+                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Total Harga", "Status Pembayaran"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -86,13 +85,6 @@ public class Pelanggan extends javax.swing.JFrame {
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Refresh");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
             }
         });
 
@@ -113,11 +105,9 @@ public class Pelanggan extends javax.swing.JFrame {
                         .addGap(46, 46, 46)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addGap(307, 307, 307)
-                                .addComponent(jButton3)
+                                .addComponent(jButton1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1))
+                                .addComponent(jButton3))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 842, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(375, 375, 375)
@@ -131,31 +121,27 @@ public class Pelanggan extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
+                .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
-                    .addComponent(jButton2)
                     .addComponent(jButton1))
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // back login
         new Login().setVisible(true);
-        // close tab
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        tampilkanData(); // panggil data
-        javax.swing.JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Apakah anda ingin melakukan pembayaran?", 
+                    "Peringatan", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
@@ -185,7 +171,6 @@ public class Pelanggan extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

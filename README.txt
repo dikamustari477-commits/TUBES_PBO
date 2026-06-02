@@ -35,3 +35,7 @@
 
     (11251063) Andika Jusuf Jeremy Mustari
         - Fix the tables in the Pelanggan.java and Penjahit.java GUI so that they can display registered data, and change the text align to center. (Fix Penjahit.java so that Penjahit.java can display customer registered data. This system also happen in Pelanggan.java)
+
+/ / / Saturday, 23 May 2026 15:02:47 - 15:56:23 \ \ \
+
+    Reverse data, edit n delete (detail pesanan unclear), login.java (double data phone num X)

@@ -1,20 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package tubes_pbo;
 
-/**
- *
- * @author lieeeven
- */
 public class Login extends javax.swing.JFrame {
-    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
-
-    /**
-     * Creates new form Form_Pelanggan
-     */
+    
     public Login() {
         initComponents();
     }
@@ -152,64 +140,76 @@ public class Login extends javax.swing.JFrame {
     
     //R
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String nama = jTextField2.getText().trim();   
-        String noHp = jTextField1.getText().trim();   
-        String alamat = jTextField4.getText().trim(); 
-        String role = jComboBox1.getSelectedItem().toString();
+        String nama     = jTextField2.getText().trim();   
+        String noHp     = jTextField1.getText().trim();   
+        String alamat   = jTextField4.getText().trim(); 
+        String role     = jComboBox1.getSelectedItem().toString();
 
         if (nama.isEmpty() || noHp.isEmpty() || alamat.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Semua field harus diisi untuk Register!", 
+                    "Semua kolom harus diisi untuk Register!", 
                     "Peringatan", 
                     javax.swing.JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (role.equals("Pelanggan")) {
-            boolean dataSudahAda = false;
+            boolean noHpSudahAda = false;
             for (ModelPelanggan p : DataStore.listPelanggan) {
-                if (p.getNama().equalsIgnoreCase(nama) && p.getNoHp().equals(noHp)) {
-                    dataSudahAda = true;
+                if (p.getNoHp().equals(noHp)) {
+                    noHpSudahAda = true;
                     break;
                 }
             }
 
-            if (dataSudahAda) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Gagal Register! Pelanggan sudah terdaftar.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            if (noHpSudahAda) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Gagal Register! Nomor Telepon '" + noHp + "' sudah terdaftar di sistem.\n" +
+                        "Gunakan nomor lain atau silakan langsung login.", 
+                        "Error Register", 
+                        javax.swing.JOptionPane.ERROR_MESSAGE);
             } else {
                 DataStore.listPelanggan.add(new ModelPelanggan(nama, noHp, alamat));
-                javax.swing.JOptionPane.showMessageDialog(this, "Register Pelanggan Berhasil!", "Sukses", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText("");
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Register Pelanggan Berhasil dibuat!", 
+                        "Sukses", 
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }
             
         } else if (role.equals("Penjahit")) {
-            boolean dataSudahAda = false;
+            boolean noHpSudahAda = false;
+            
             for (ModelPenjahit p : DataStore.listPenjahit) {
-                if (p.getNama().equalsIgnoreCase(nama) && p.getNoHp().equals(noHp)) {
-                    dataSudahAda = true;
+                if (p.getNoHp().equals(noHp)) {
+                    noHpSudahAda = true;
                     break;
                 }
             }
 
-            if (dataSudahAda) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Gagal Register! Penjahit sudah terdaftar.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            if (noHpSudahAda) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Gagal Register! Nomor Telepon Penjahit sudah terdaftar.", 
+                        "Error Register", 
+                        javax.swing.JOptionPane.ERROR_MESSAGE);
             } else {
                 DataStore.listPenjahit.add(new ModelPenjahit(nama, noHp, alamat));
-                javax.swing.JOptionPane.showMessageDialog(this, "Register Penjahit Berhasil!", "Sukses", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText("");
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Register Penjahit Berhasil!", 
+                        "Sukses", 
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
     
     //L
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        String nama = jTextField2.getText().trim();   
-        String noHp = jTextField1.getText().trim();   
-        String role = jComboBox1.getSelectedItem().toString();
-
+        String nama     = jTextField2.getText().trim();   
+        String noHp     = jTextField1.getText().trim();   
+        String role     = jComboBox1.getSelectedItem().toString();
+        
         if (nama.isEmpty() || noHp.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Nama dan No Telpon harus diisi untuk Login!", 
+                    "Semua baris harus diisi untuk Login!", 
                     "Peringatan", 
                     javax.swing.JOptionPane.WARNING_MESSAGE);
             return;
@@ -230,8 +230,8 @@ public class Login extends javax.swing.JFrame {
                         "Login Berhasil! Selamat datang, " + ditemukan.getNama(), 
                         "Login Sukses", 
                         javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                
-                new Pelanggan().setVisible(true); 
+               
+                new Pelanggan(ditemukan).setVisible(true); 
                 this.dispose(); 
             } else {
                 javax.swing.JOptionPane.showMessageDialog(this, 

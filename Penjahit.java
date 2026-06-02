@@ -1,16 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package tubes_pbo;
 
 public class Penjahit extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Penjahit.class.getName());
 
-    /**
-     * Creates new form penjahit
-     */
     public Penjahit() {
         initComponents();
         tampilkanData();
@@ -18,7 +11,6 @@ public class Penjahit extends javax.swing.JFrame {
     
     private void tampilkanData() {
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
-        
         model.setRowCount(0);
         
         for (ModelPelanggan p : DataStore.listPelanggan) {
@@ -26,18 +18,21 @@ public class Penjahit extends javax.swing.JFrame {
                 p.getNama(),
                 p.getNoHp(),
                 p.getAlamat(),
-                "-",          // Detail Pesanan (bisa diisi manual atau default strip dulu)
-                "Pending",    // Status Pesanan awal
-                "Belum Bayar" // Status Pembayaran awal
+                "-",
+               "Rp " + p.getTotalHarga(),
+                p.getStatusPesanan(),   
+                p.getStatusPembayaran() 
             };
-            model.addRow(row); // Masukkan data pelanggan ke tabel penjahit
+            model.addRow(row);
         }
-        
+
         javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
         for (int i = 0; i < jTable1.getColumnCount(); i++) {
             jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+        ((javax.swing.table.DefaultTableCellRenderer) jTable1.getTableHeader().getDefaultRenderer())
+                .setHorizontalAlignment(javax.swing.JLabel.CENTER);
     }
 
     /**
@@ -62,23 +57,25 @@ public class Penjahit extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Pembayaran"
+                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Total Harga", "Status Pembayaran"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
+        jTable1.setGridColor(new java.awt.Color(255, 51, 51));
+        jTable1.setInheritsPopupMenu(true);
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Edit");
@@ -141,25 +138,91 @@ public class Penjahit extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+// Edit
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        javax.swing.JOptionPane.showMessageDialog(this,"Data penjahit berhasil diperbarui!");
+        int barisTerpilih = jTable1.getSelectedRow();
+        
+        if (barisTerpilih == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Silakan pilih/klik salah satu baris data pelanggan di tabel terlebih dahulu!", 
+                    "Peringatan", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ModelPelanggan pelangganTerpilih = DataStore.listPelanggan.get(barisTerpilih);
+
+        String hargaInput = javax.swing.JOptionPane.showInputDialog(this, 
+                "Masukkan Total Harga untuk " + pelangganTerpilih.getNama() + ":", 
+                String.valueOf(pelangganTerpilih.getTotalHarga()));
+        
+        if (hargaInput == null) return;
+
+        int hargaBaru = pelangganTerpilih.getTotalHarga();
+        try {
+            hargaBaru = Integer.parseInt(hargaInput.trim());
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Input harga harus berupa angka!", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String[] pilihanStatus = {"Pending", "Sedang Dijahit", "Selesai"};
+        String statusBaru = (String) javax.swing.JOptionPane.showInputDialog(this, 
+                "Ubah Status Pesanan untuk " + pelangganTerpilih.getNama() + ":", 
+                "Update Status Pesanan", 
+                javax.swing.JOptionPane.QUESTION_MESSAGE, 
+                null, pilihanStatus, pelangganTerpilih.getStatusPesanan());
+
+        if (statusBaru == null) return; 
+
+        String[] pilihanBayar = {"Belum Bayar", "Lunas"};
+        String bayarBaru = (String) javax.swing.JOptionPane.showInputDialog(this, 
+                "Ubah Status Pembayaran untuk " + pelangganTerpilih.getNama() + ":", 
+                "Update Status Pembayaran", 
+                javax.swing.JOptionPane.QUESTION_MESSAGE, 
+                null, pilihanBayar, pelangganTerpilih.getStatusPembayaran());
+
+        if (bayarBaru == null) return;
+
+        pelangganTerpilih.setTotalHarga(hargaBaru); 
+        pelangganTerpilih.setStatusPesanan(statusBaru);
+        pelangganTerpilih.setStatusPembayaran(bayarBaru);
+
+        tampilkanData();
+        
+        javax.swing.JOptionPane.showMessageDialog(this, "Data Pesanan & Harga berhasil diperbarui!");
     }//GEN-LAST:event_jButton1ActionPerformed
+// Delete
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        int barisTerpilih = jTable1.getSelectedRow();
+        
+        if (barisTerpilih == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Silakan pilih/klik baris data pelanggan yang ingin dihapus!", 
+                    "Peringatan", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ModelPelanggan pelangganTerpilih = DataStore.listPelanggan.get(barisTerpilih);
+
         int konfirmasi = javax.swing.JOptionPane.showConfirmDialog(this,
-                "Apakah anda yakin ingin menghapus data pelanggan ini?",
-                "Konfirmasi hapus",
+                "Apakah anda yakin ingin menghapus data pelanggan '" + pelangganTerpilih.getNama() + "'?",
+                "Konfirmasi Hapus",
                 javax.swing.JOptionPane.YES_NO_OPTION);
         
-        if (konfirmasi == javax.swing.JOptionPane.YES_OPTION){
+        if (konfirmasi == javax.swing.JOptionPane.YES_OPTION) {
+            DataStore.listPelanggan.remove(barisTerpilih);
+            
+            tampilkanData();
+            
             javax.swing.JOptionPane.showMessageDialog(this, "Data pelanggan berhasil dihapus!");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // back login
         new Login().setVisible(true);
-        // close tab
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
