@@ -6,7 +6,7 @@ public class ModelPenjahit {
     private String alamat;
     private String password;
 
-    public ModelPenjahit(String nama, String noHp, String alamat) {
+    public ModelPenjahit(String nama, String noHp, String alamat, String password) {
         this.nama   = nama;
         this.noHp   = noHp;
         this.alamat = alamat;
