@@ -156,7 +156,7 @@ public class Penjahit extends javax.swing.JFrame {
         ModelPelanggan pelangganTerpilih = DataStore.listPelanggan.get(barisTerpilih);
 
         // 4. Tampilkan pilihan Pop-up untuk mengubah Status Pesanan
-        String[] pilihanStatus = {"Pending", "Sedang Dijahit", "Selesai"};
+        String[] pilihanStatus = {"Pending", "Ditolak", "Sedang Dijahit", "Selesai"};
         String statusBaru = (String) javax.swing.JOptionPane.showInputDialog(this, 
                 "Ubah Status Pesanan untuk " + pelangganTerpilih.getNama() + ":", 
                 "Update Status Pesanan", 
