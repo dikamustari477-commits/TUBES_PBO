@@ -181,7 +181,7 @@ public class Login extends javax.swing.JFrame {
             } else {
                 DataStore.listPelanggan.add(new ModelPelanggan(nama, noHp, alamat, password));
                 javax.swing.JOptionPane.showMessageDialog(this, "Register Pelanggan Berhasil!", "Sukses", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText("");
+                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText(""); jPasswordField1.setText("");
             }
             
         } else if (role.equals("Penjahit")) {
@@ -198,7 +198,7 @@ public class Login extends javax.swing.JFrame {
             } else {
                 DataStore.listPenjahit.add(new ModelPenjahit(nama, noHp, alamat, password));
                 javax.swing.JOptionPane.showMessageDialog(this, "Register Penjahit Berhasil!", "Sukses", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText("");
+                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText(""); jPasswordField1.setText("");
             }
         }
     }                                        
