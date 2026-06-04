@@ -1,4 +1,4 @@
-package tubes_pbo;
+    package tubes_pbo;
 
 public class Penjahit extends javax.swing.JFrame {
     
@@ -18,14 +18,14 @@ public class Penjahit extends javax.swing.JFrame {
                 p.getNama(),
                 p.getNoHp(),
                 p.getAlamat(),
-                "-",
-               "Rp " + p.getTotalHarga(),
+                "-", 
                 p.getStatusPesanan(),   
                 p.getStatusPembayaran() 
             };
             model.addRow(row);
         }
 
+        // Kode renderer rata tengah yang kemarin
         javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
         for (int i = 0; i < jTable1.getColumnCount(); i++) {
@@ -57,17 +57,17 @@ public class Penjahit extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Total Harga", "Status Pembayaran"
+                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Pembayaran"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -138,10 +138,12 @@ public class Penjahit extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-// Edit
+// Button Edit
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // 1. Ambil baris tabel yang dipilih oleh user
         int barisTerpilih = jTable1.getSelectedRow();
         
+        // 2. Validasi jika penjahit belum memilih baris apapun
         if (barisTerpilih == -1) {
             javax.swing.JOptionPane.showMessageDialog(this, 
                     "Silakan pilih/klik salah satu baris data pelanggan di tabel terlebih dahulu!", 
@@ -150,22 +152,10 @@ public class Penjahit extends javax.swing.JFrame {
             return;
         }
 
+        // 3. Ambil objek pelanggan asli dari DataStore berdasarkan baris yang diklik
         ModelPelanggan pelangganTerpilih = DataStore.listPelanggan.get(barisTerpilih);
 
-        String hargaInput = javax.swing.JOptionPane.showInputDialog(this, 
-                "Masukkan Total Harga untuk " + pelangganTerpilih.getNama() + ":", 
-                String.valueOf(pelangganTerpilih.getTotalHarga()));
-        
-        if (hargaInput == null) return;
-
-        int hargaBaru = pelangganTerpilih.getTotalHarga();
-        try {
-            hargaBaru = Integer.parseInt(hargaInput.trim());
-        } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Input harga harus berupa angka!", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+        // 4. Tampilkan pilihan Pop-up untuk mengubah Status Pesanan
         String[] pilihanStatus = {"Pending", "Sedang Dijahit", "Selesai"};
         String statusBaru = (String) javax.swing.JOptionPane.showInputDialog(this, 
                 "Ubah Status Pesanan untuk " + pelangganTerpilih.getNama() + ":", 
@@ -173,8 +163,10 @@ public class Penjahit extends javax.swing.JFrame {
                 javax.swing.JOptionPane.QUESTION_MESSAGE, 
                 null, pilihanStatus, pelangganTerpilih.getStatusPesanan());
 
+        // Jika penjahit menekan tombol cancel pada pop-up status
         if (statusBaru == null) return; 
 
+        // 5. Tampilkan pilihan Pop-up untuk mengubah Status Pembayaran
         String[] pilihanBayar = {"Belum Bayar", "Lunas"};
         String bayarBaru = (String) javax.swing.JOptionPane.showInputDialog(this, 
                 "Ubah Status Pembayaran untuk " + pelangganTerpilih.getNama() + ":", 
@@ -182,17 +174,19 @@ public class Penjahit extends javax.swing.JFrame {
                 javax.swing.JOptionPane.QUESTION_MESSAGE, 
                 null, pilihanBayar, pelangganTerpilih.getStatusPembayaran());
 
+        // Jika penjahit menekan tombol cancel pada pop-up pembayaran
         if (bayarBaru == null) return;
 
-        pelangganTerpilih.setTotalHarga(hargaBaru); 
+        // 6. Simpan perubahan ke dalam DataStore
         pelangganTerpilih.setStatusPesanan(statusBaru);
         pelangganTerpilih.setStatusPembayaran(bayarBaru);
 
+        // 7. Refresh tabel agar data di layar langsung ter-update
         tampilkanData();
         
-        javax.swing.JOptionPane.showMessageDialog(this, "Data Pesanan & Harga berhasil diperbarui!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Data Pelanggan berhasil diperbarui!");
     }//GEN-LAST:event_jButton1ActionPerformed
-// Delete
+// Button Edit
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         int barisTerpilih = jTable1.getSelectedRow();
@@ -207,14 +201,17 @@ public class Penjahit extends javax.swing.JFrame {
 
         ModelPelanggan pelangganTerpilih = DataStore.listPelanggan.get(barisTerpilih);
 
+        // Konfirmasi sebelum menghapus
         int konfirmasi = javax.swing.JOptionPane.showConfirmDialog(this,
                 "Apakah anda yakin ingin menghapus data pelanggan '" + pelangganTerpilih.getNama() + "'?",
                 "Konfirmasi Hapus",
                 javax.swing.JOptionPane.YES_NO_OPTION);
         
         if (konfirmasi == javax.swing.JOptionPane.YES_OPTION) {
+            // Hapus data dari ArrayList DataStore berdasarkan indeks barisnya
             DataStore.listPelanggan.remove(barisTerpilih);
             
+            // Refresh tabel
             tampilkanData();
             
             javax.swing.JOptionPane.showMessageDialog(this, "Data pelanggan berhasil dihapus!");
@@ -222,7 +219,9 @@ public class Penjahit extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // back login
         new Login().setVisible(true);
+        // close tab
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 

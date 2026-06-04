@@ -10,29 +10,31 @@ public class Pelanggan extends javax.swing.JFrame {
         tampilkanData();
     }
 
+    // Constructor bawaan NetBeans tetap dipertahankan agar tidak merusak GUI builder
     public Pelanggan() {
         initComponents();
         tampilkanData();
     }
     
-// ISI
     private void tampilkanData() {
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         
+        // JIKA variabel penampung kosong, abaikan pengisian data (mencegah error null)
         if (pelangganLogin == null) return;
 
+        // DIUBAH: Menghilangkan perulangan 'for' agar data pelanggan lain tidak muncul
         Object[] row = {
             pelangganLogin.getNama(),
             pelangganLogin.getNoHp(),
             pelangganLogin.getAlamat(),
-            "-",
-            "Rp" +  pelangganLogin.getTotalHarga(),
+            "-", 
             pelangganLogin.getStatusPesanan(),  
             pelangganLogin.getStatusPembayaran() 
         };
-        model.addRow(row); 
+        model.addRow(row); // Hanya satu baris data ini saja yang masuk ke tabel
 
+        // Logika meratakan teks ke tengah
         javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
         for (int i = 0; i < jTable1.getColumnCount(); i++) {
@@ -64,15 +66,15 @@ public class Pelanggan extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Total Harga", "Status Pembayaran"
+                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Pembayaran"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -137,11 +139,7 @@ public class Pelanggan extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Apakah anda ingin melakukan pembayaran?", 
-                    "Peringatan", 
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
+        // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
