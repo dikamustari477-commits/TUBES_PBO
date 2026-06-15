@@ -1,32 +1,48 @@
 package tubes_pbo;
 
-public class ModelPelanggan {
-    private String nama;
-    private String noHp;
-    private String alamat;
-    private String password: 
-    private String statusPesanan;   
-    private String statusPembayaran; 
+import java.util.ArrayList;
 
-    // Cons
+public class ModelPelanggan extends Pengguna {
+    private int id;
+    private String alamat;
+    private String password;
+    private ArrayList<ModelPesanan> listPesanan = new ArrayList<>();
+
     public ModelPelanggan(String nama, String noHp, String alamat, String password) {
-        this.nama = nama;
-        this.noHp = noHp;
+        super(nama, noHp);
         this.alamat = alamat;
         this.password = password;
-        this.statusPesanan = "Pending";     
-        this.statusPembayaran = "Belum Bayar"; 
     }
 
-    // Get
-    public String getNama() { return nama; }
-    public String getNoHp() { return noHp; }
-    public String getAlamat() { return alamat; }
-    public String getPassword() { return password; }
-    public String getStatusPesanan() { return statusPesanan; }
-    public String getStatusPembayaran() { return statusPembayaran; }
+    public ModelPelanggan(int id, String nama, String noHp, String alamat, String password) {
+        super(nama, noHp);
+        this.id = id;
+        this.alamat = alamat;
+        this.password = password;
+    }
 
-    // Set
-    public void setStatusPesanan(String statusPesanan) { this.statusPesanan = statusPesanan; }
-    public void setStatusPembayaran(String statusPembayaran) { this.statusPembayaran = statusPembayaran; }
+    @Override
+    public String getRole() {
+        return "Pelanggan";
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getAlamat() {
+        return alamat;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public ArrayList<ModelPesanan> getListPesanan() {
+        return listPesanan;
+    }
+
+    public void tambahPesanan(ModelPesanan pesanan) {
+        listPesanan.add(pesanan);
+    }
 }

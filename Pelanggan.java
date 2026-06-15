@@ -1,48 +1,89 @@
 package tubes_pbo;
 
-public class Pelanggan extends javax.swing.JFrame {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+
+public class Pelanggan extends javax.swing.JFrame implements InterfacePelanggan {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Pelanggan.class.getName());
     private ModelPelanggan pelangganLogin;
+    
     public Pelanggan(ModelPelanggan p) {
         initComponents();
         this.pelangganLogin = p; 
         tampilkanData();
     }
 
-    // Constructor bawaan NetBeans tetap dipertahankan agar tidak merusak GUI builder
     public Pelanggan() {
         initComponents();
         tampilkanData();
     }
     
-    private void tampilkanData() {
-        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+    @Override
+    public void tampilkanData() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
-        
-        // JIKA variabel penampung kosong, abaikan pengisian data (mencegah error null)
-        if (pelangganLogin == null) return;
 
-        // DIUBAH: Menghilangkan perulangan 'for' agar data pelanggan lain tidak muncul
-        Object[] row = {
-            pelangganLogin.getNama(),
-            pelangganLogin.getNoHp(),
-            pelangganLogin.getAlamat(),
-            "-", 
-            pelangganLogin.getStatusPesanan(),  
-            pelangganLogin.getStatusPembayaran() 
-        };
-        model.addRow(row); // Hanya satu baris data ini saja yang masuk ke tabel
-
-        // Logika meratakan teks ke tengah
-        javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
-        for (int i = 0; i < jTable1.getColumnCount(); i++) {
-            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        if (pelangganLogin == null) {
+            return;
         }
-        
-        ((javax.swing.table.DefaultTableCellRenderer) jTable1.getTableHeader().getDefaultRenderer())
-                .setHorizontalAlignment(javax.swing.JLabel.CENTER);
+
+        pelangganLogin.getListPesanan().clear();
+
+        try (Connection conn = Koneksi.getConnection()) {
+            String sql = "SELECT id, user_id, nama_pesanan, detail_pesanan, status_pesanan, total_harga, status_pembayaran "
+                       + "FROM pesanan WHERE user_id = ? ORDER BY id ASC";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, pelangganLogin.getId());
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                ModelPesanan pesanan = new ModelPesanan(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getString("nama_pesanan"),
+                        rs.getString("detail_pesanan"),
+                        rs.getString("status_pesanan"),
+                        rs.getInt("total_harga"),
+                        rs.getString("status_pembayaran")
+                );
+                pelangganLogin.getListPesanan().add(pesanan);
+
+                Object[] row = {
+                    pelangganLogin.getNama(),
+                    pelangganLogin.getNoHp(),
+                    pelangganLogin.getAlamat(),
+                    pesanan.getNamaPesanan(),
+                    pesanan.getDetailPesanan(),
+                    pesanan.getStatusPesanan(),
+                    "Rp " + pesanan.getTotalHarga(),
+                    pesanan.getStatusPembayaran()
+                };
+                model.addRow(row);
+            }
+
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+            for (int i = 0; i < jTable1.getColumnCount(); i++) {
+                jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+            ((DefaultTableCellRenderer) jTable1.getTableHeader().getDefaultRenderer())
+                    .setHorizontalAlignment(JLabel.CENTER);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal menampilkan data pesanan: " + e.getMessage(),
+                    "Error Database",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -59,6 +100,7 @@ public class Pelanggan extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -66,21 +108,22 @@ public class Pelanggan extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Pembayaran"
+                "Nama", "No Telepon", "Alamat", "Pesanan", "Detail Pesanan", "Status Pesanan", "Total Harga", "Status Pembayaran"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
+        jTable1.setColumnSelectionAllowed(false);
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Kembali");
@@ -97,6 +140,13 @@ public class Pelanggan extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Pesanan Baru");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -108,6 +158,8 @@ public class Pelanggan extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton1)
+                                .addGap(298, 298, 298)
+                                .addComponent(jButton2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButton3))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 842, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -126,8 +178,9 @@ public class Pelanggan extends javax.swing.JFrame {
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
-                    .addComponent(jButton1))
-                .addContainerGap(49, Short.MAX_VALUE))
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         pack();
@@ -139,36 +192,97 @@ public class Pelanggan extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        tampilkanPembayaran();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        String inputPesanan = JOptionPane.showInputDialog(this, "Masukkan Jenis Pakaian (misal: Kemeja Batik):");
+        if (inputPesanan == null || inputPesanan.trim().isEmpty()) {
+            return;
+        }
+
+        String inputDetail = JOptionPane.showInputDialog(this, "Masukkan Detail Ukuran / Keterangan (misal: Ukuran L, Lengan Panjang):");
+        if (inputDetail == null) {
+            return;
+        }
+
+        tambahPesanan(inputPesanan, inputDetail);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    @Override
+    public void tambahPesanan(String namaPesanan, String detailPesanan) {
+        if (pelangganLogin == null) {
+            JOptionPane.showMessageDialog(this, "Data pelanggan belum ditemukan.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (namaPesanan == null || namaPesanan.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Jenis pakaian tidak boleh kosong.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (detailPesanan == null) {
+            return;
+        }
+
+        try (Connection conn = Koneksi.getConnection()) {
+            String sql = "INSERT INTO pesanan (user_id, nama_pesanan, detail_pesanan, status_pesanan, total_harga, status_pembayaran) "
+                       + "VALUES (?, ?, ?, 'Pending', 0, 'Belum Bayar')";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, pelangganLogin.getId());
+            pst.setString(2, namaPesanan.trim());
+            pst.setString(3, detailPesanan.trim());
+            pst.executeUpdate();
+
+            tampilkanData();
+            JOptionPane.showMessageDialog(this, "Pesanan baru berhasil diajukan dan tersimpan ke database!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal menyimpan pesanan baru: " + e.getMessage(),
+                    "Error Database",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    @Override
+    public void tampilkanPembayaran() {
+        try {
+            java.net.URL lokasi = getClass().getResource("/gambar/qris.jpeg");
+
+            if (lokasi == null) {
+                JOptionPane.showMessageDialog(this, "File QR Code tidak ditemukan!");
+                return;
+            }
+
+            ImageIcon qrIcon = new ImageIcon(lokasi);
+            Image img = qrIcon.getImage();
+            Image resizedImg = img.getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+
+            JLabel qrLabel = new JLabel(new ImageIcon(resizedImg));
+            qrLabel.setHorizontalAlignment(JLabel.CENTER);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    qrLabel,
+                    "Scan QR Code Pembayaran",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new Pelanggan().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

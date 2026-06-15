@@ -1,5 +1,11 @@
 package tubes_pbo;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 public class Login extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
     
@@ -8,7 +14,7 @@ public class Login extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
@@ -24,12 +30,20 @@ public class Login extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         jPasswordField1 = new javax.swing.JPasswordField();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBounds(new java.awt.Rectangle(0, 0, 780, 650));
 
-        jLabel1.setText("Jasa Jahit fmsknknsfg");
+        jLabel1.setFont(new java.awt.Font("Script MT Bold", 3, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 153, 204));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("ReAndKhay Taylor");
+        jLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        jLabel2.setFont(new java.awt.Font("Sitka Text", 1, 14)); // NOI18N
         jLabel2.setText("Nama");
+        jLabel2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, new java.awt.Color(153, 153, 153), java.awt.Color.white, java.awt.Color.lightGray));
 
         jLabel3.setText("No Telpon");
 
@@ -78,6 +92,12 @@ public class Login extends javax.swing.JFrame {
 
         jLabel6.setText("Password");
 
+        jPasswordField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordField1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -110,6 +130,10 @@ public class Login extends javax.swing.JFrame {
                                     .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
                                     .addComponent(jPasswordField1))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,7 +144,9 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addGap(48, 48, 48)
+                .addGap(31, 31, 31)
+                .addComponent(jLabel7)
+                .addGap(1, 1, 1)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -136,7 +162,7 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
@@ -144,144 +170,151 @@ public class Login extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>                        
+    }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {                                            
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
         // TODO add your handling code here:
-    }                                           
+    }//GEN-LAST:event_jTextField2ActionPerformed
     
-    //R
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        String nama     = jTextField2.getText().trim();   
-        String noHp     = jTextField1.getText().trim();   
-        String alamat   = jTextField4.getText().trim(); 
-        String role     = jComboBox1.getSelectedItem().toString();
-
+    //Reg
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String nama     = jTextField2.getText().trim();
+        String noHp     = jTextField1.getText().trim();
+        String alamat   = jTextField4.getText().trim();
+        String role     = jComboBox1.getSelectedItem().toString().trim();
         String password = new String(jPasswordField1.getPassword()).trim();
-        
-        if (nama.isEmpty() || noHp.isEmpty() || alamat.isEmpty() || password.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Semua field harus diisi untuk Register!", 
-                    "Peringatan", 
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
+
+        if (nama.isEmpty() || noHp.isEmpty() || alamat.isEmpty() || password.isEmpty() || role.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Semua field harus diisi untuk Register!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (role.equals("Pelanggan")) {
-            boolean dataSudahAda = false;
-            for (ModelPelanggan p : DataStore.listPelanggan) {
-                if (p.getNama().equalsIgnoreCase(nama) && p.getNoHp().equals(noHp)) {
-                    dataSudahAda = true;
-                    break;
-                }
+        try (Connection conn = Koneksi.getConnection()) {
+            String cekSql = "SELECT id FROM `user` WHERE no_hp = ? AND role = ?";
+            PreparedStatement cekPst = conn.prepareStatement(cekSql);
+            cekPst.setString(1, noHp);
+            cekPst.setString(2, role);
+            ResultSet rs = cekPst.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this,
+                        "Gagal Register! Nomor telepon sudah terdaftar sebagai " + role + ".",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
-            if (dataSudahAda) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Gagal Register! Pelanggan sudah terdaftar.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-            } else {
-                DataStore.listPelanggan.add(new ModelPelanggan(nama, noHp, alamat, password));
-                javax.swing.JOptionPane.showMessageDialog(this, "Register Pelanggan Berhasil!", "Sukses", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText(""); jPasswordField1.setText("");
-            }
-            
-        } else if (role.equals("Penjahit")) {
-            boolean dataSudahAda = false;
-            for (ModelPenjahit p : DataStore.listPenjahit) {
-                if (p.getNama().equalsIgnoreCase(nama) && p.getNoHp().equals(noHp)) {
-                    dataSudahAda = true;
-                    break;
-                }
-            }
+            String sql = "INSERT INTO `user` (nama, no_hp, alamat, role, `password`) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, nama);
+            pst.setString(2, noHp);
+            pst.setString(3, alamat);
+            pst.setString(4, role);
+            pst.setString(5, password);
+            pst.executeUpdate();
 
-            if (dataSudahAda) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Gagal Register! Penjahit sudah terdaftar.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-            } else {
-                DataStore.listPenjahit.add(new ModelPenjahit(nama, noHp, alamat, password));
-                javax.swing.JOptionPane.showMessageDialog(this, "Register Penjahit Berhasil!", "Sukses", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                jTextField1.setText(""); jTextField2.setText(""); jTextField4.setText(""); jPasswordField1.setText("");
-            }
+            JOptionPane.showMessageDialog(this,
+                    "Register " + role + " berhasil dan tersimpan ke database!",
+                    "Sukses",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField4.setText("");
+            jPasswordField1.setText("");
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Register gagal: " + e.getMessage(),
+                    "Error Database",
+                    JOptionPane.ERROR_MESSAGE);
         }
-    }                                        
+        }//GEN-LAST:event_jButton1ActionPerformed
     
-    //L
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        String nama     = jTextField2.getText().trim();   
-        String noHp     = jTextField1.getText().trim();   
-        String role     = jComboBox1.getSelectedItem().toString();
-        
+    //Log
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        String nama     = jTextField2.getText().trim();
+        String noHp     = jTextField1.getText().trim();
+        String role     = jComboBox1.getSelectedItem().toString().trim();
         String password = new String(jPasswordField1.getPassword()).trim();
-        
-        if (nama.isEmpty() || password.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Nama dan Password harus diisi untuk Login!", 
-                    "Peringatan", 
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
+
+        if (nama.isEmpty() || noHp.isEmpty() || password.isEmpty() || role.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Nama, No Telepon, dan Password harus diisi untuk Login!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (role.equals("Pelanggan")) {
-            ModelPelanggan ditemukan = null;
+        try (Connection conn = Koneksi.getConnection()) {
+            String sql = "SELECT id, nama, no_hp, alamat, role, `password` FROM `user` "
+                       + "WHERE nama = ? AND no_hp = ? AND role = ? AND `password` = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, nama);
+            pst.setString(2, noHp);
+            pst.setString(3, role);
+            pst.setString(4, password);
+            ResultSet rs = pst.executeQuery();
 
-            for (ModelPelanggan p : DataStore.listPelanggan) {
-                if (p.getNama().equalsIgnoreCase(nama) && p.getPassword().equals(password)) {
-                    ditemukan = p;
-                    break;
+            if (rs.next()) {
+                if (role.equals("Pelanggan")) {
+                    ModelPelanggan pelanggan = new ModelPelanggan(
+                            rs.getInt("id"),
+                            rs.getString("nama"),
+                            rs.getString("no_hp"),
+                            rs.getString("alamat"),
+                            rs.getString("password")
+                    );
+
+                    JOptionPane.showMessageDialog(this,
+                            "Login Berhasil! Selamat datang, " + pelanggan.getNama(),
+                            "Login Sukses",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    new Pelanggan(pelanggan).setVisible(true);
+                    this.dispose();
+                } else if (role.equals("Penjahit")) {
+                    JOptionPane.showMessageDialog(this,
+                            "Login Berhasil! Selamat datang Penjahit: " + rs.getString("nama"),
+                            "Login Sukses",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    new Penjahit().setVisible(true);
+                    this.dispose();
                 }
-            }
-
-            if (ditemukan != null) {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                        "Login Berhasil! Selamat datang, " + ditemukan.getNama(), 
-                        "Login Sukses", 
-                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
-               
-                new Pelanggan(ditemukan).setVisible(true); 
-                this.dispose(); 
             } else {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                        "Login Gagal! Data tidak ditemukan. Silakan Register terlebih dahulu.", 
-                        "Error Login", 
-                        javax.swing.JOptionPane.ERROR_MESSAGE);
-            }
-            
-        } else if (role.equals("Penjahit")) {
-            ModelPenjahit ditemukan = null;
-
-            for (ModelPenjahit p : DataStore.listPenjahit) {
-                if (p.getNama().equalsIgnoreCase(nama) && p.getPassword().equals(password)) {
-                    ditemukan = p;
-                    break;
-                }
+                JOptionPane.showMessageDialog(this,
+                        "Login Gagal! Data tidak ditemukan. Pastikan nama, no telepon, role, dan password benar.",
+                        "Error Login",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
-            if (ditemukan != null) {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                        "Login Berhasil! Selamat datang Penjahit: " + ditemukan.getNama(), 
-                        "Login Sukses", 
-                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                
-                new Penjahit().setVisible(true); 
-                this.dispose();
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                        "Login Gagal! Data Penjahit tidak ditemukan. Silakan Register terlebih dahulu.", 
-                        "Error Login", 
-                        javax.swing.JOptionPane.ERROR_MESSAGE);
-            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Login gagal: " + e.getMessage(),
+                    "Error Database",
+                    JOptionPane.ERROR_MESSAGE);
         }
-    }                                        
+        }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
-    }                                          
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {                                            
+    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
         // TODO add your handling code here:
-    }                                           
+    }//GEN-LAST:event_jTextField4ActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {                                            
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
-    }                                           
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPasswordField1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -308,7 +341,7 @@ public class Login extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new Login().setVisible(true));
     }
 
-    // Variables declaration - do not modify                     
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboBox1;
@@ -318,9 +351,10 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField4;
-    // End of variables declaration                   
+    // End of variables declaration//GEN-END:variables
 }

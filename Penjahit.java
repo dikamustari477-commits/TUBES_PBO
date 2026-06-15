@@ -1,38 +1,95 @@
-    package tubes_pbo;
+package tubes_pbo;
 
-public class Penjahit extends javax.swing.JFrame {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+public class Penjahit extends javax.swing.JFrame implements InterfacePenjahit {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Penjahit.class.getName());
+    
+    // Variabel penunjuk pembantu untuk memetakan indeks baris tabel ke objek aslinya
+    private java.util.ArrayList<ModelPelanggan> penunjukPelanggan = new java.util.ArrayList<>();
+    private java.util.ArrayList<ModelPesanan> penunjukPesanan = new java.util.ArrayList<>();
 
     public Penjahit() {
         initComponents();
         tampilkanData();
     }
     
-    private void tampilkanData() {
-        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+    @Override
+    public void tampilkanData() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
-        
-        for (ModelPelanggan p : DataStore.listPelanggan) {
-            Object[] row = {
-                p.getNama(),
-                p.getNoHp(),
-                p.getAlamat(),
-                "-", 
-                p.getStatusPesanan(),   
-                p.getStatusPembayaran() 
-            };
-            model.addRow(row);
-        }
 
-        // Kode renderer rata tengah yang kemarin
-        javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
-        for (int i = 0; i < jTable1.getColumnCount(); i++) {
-            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        penunjukPelanggan.clear();
+        penunjukPesanan.clear();
+
+        try (Connection conn = Koneksi.getConnection()) {
+            String sql = "SELECT p.id AS pesanan_id, p.user_id, p.nama_pesanan, p.detail_pesanan, "
+                       + "p.status_pesanan, p.total_harga, p.status_pembayaran, "
+                       + "u.nama, u.no_hp, u.alamat "
+                       + "FROM pesanan p "
+                       + "JOIN `user` u ON p.user_id = u.id "
+                       + "WHERE u.role = 'Pelanggan' "
+                       + "ORDER BY p.id DESC";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                ModelPelanggan pelanggan = new ModelPelanggan(
+                        rs.getInt("user_id"),
+                        rs.getString("nama"),
+                        rs.getString("no_hp"),
+                        rs.getString("alamat"),
+                        ""
+                );
+
+                ModelPesanan pesanan = new ModelPesanan(
+                        rs.getInt("pesanan_id"),
+                        rs.getInt("user_id"),
+                        rs.getString("nama_pesanan"),
+                        rs.getString("detail_pesanan"),
+                        rs.getString("status_pesanan"),
+                        rs.getInt("total_harga"),
+                        rs.getString("status_pembayaran")
+                );
+
+                Object[] row = {
+                    pelanggan.getNama(),
+                    pelanggan.getNoHp(),
+                    pelanggan.getAlamat(),
+                    pesanan.getNamaPesanan(),
+                    pesanan.getDetailPesanan(),
+                    pesanan.getStatusPesanan(),
+                    "Rp " + pesanan.getTotalHarga(),
+                    pesanan.getStatusPembayaran()
+                };
+                model.addRow(row);
+
+                penunjukPelanggan.add(pelanggan);
+                penunjukPesanan.add(pesanan);
+            }
+
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+            for (int i = 0; i < jTable1.getColumnCount(); i++) {
+                jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+            ((DefaultTableCellRenderer) jTable1.getTableHeader().getDefaultRenderer())
+                    .setHorizontalAlignment(JLabel.CENTER);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal menampilkan data pesanan: " + e.getMessage(),
+                    "Error Database",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        ((javax.swing.table.DefaultTableCellRenderer) jTable1.getTableHeader().getDefaultRenderer())
-                .setHorizontalAlignment(javax.swing.JLabel.CENTER);
     }
 
     /**
@@ -57,17 +114,17 @@ public class Penjahit extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Nama", "No Telepon", "Alamat", "Detail Pesanan", "Status Pesanan", "Pembayaran"
+                "Nama", "No Telepon", "Alamat", "Pesanan", "Detail Pesanan", "Status Pesanan", "Total Harga", "Pembayaran"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -77,6 +134,9 @@ public class Penjahit extends javax.swing.JFrame {
         jTable1.setGridColor(new java.awt.Color(255, 51, 51));
         jTable1.setInheritsPopupMenu(true);
         jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(6).setResizable(false);
+        }
 
         jButton1.setText("Edit");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -111,14 +171,14 @@ public class Penjahit extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(43, 43, 43)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 700, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addGap(203, 203, 203)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(231, 231, 231)
                                 .addComponent(jButton2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton3))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 629, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(62, Short.MAX_VALUE))
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,90 +198,115 @@ public class Penjahit extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-// Button Edit
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // 1. Ambil baris tabel yang dipilih oleh user
+    @Override
+    public void editPesanan() {
         int barisTerpilih = jTable1.getSelectedRow();
-        
-        // 2. Validasi jika penjahit belum memilih baris apapun
+
         if (barisTerpilih == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Silakan pilih/klik salah satu baris data pelanggan di tabel terlebih dahulu!", 
-                    "Peringatan", 
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Silakan pilih/klik salah satu baris data pesanan di tabel terlebih dahulu!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // 3. Ambil objek pelanggan asli dari DataStore berdasarkan baris yang diklik
-        ModelPelanggan pelangganTerpilih = DataStore.listPelanggan.get(barisTerpilih);
+        ModelPelanggan pelangganTerpilih = penunjukPelanggan.get(barisTerpilih);
+        ModelPesanan pesananTerpilih = penunjukPesanan.get(barisTerpilih);
 
-        // 4. Tampilkan pilihan Pop-up untuk mengubah Status Pesanan
+        String detailBaru = JOptionPane.showInputDialog(this,
+                "Edit Detail Keterangan Pesanan milik " + pelangganTerpilih.getNama() + ":", pesananTerpilih.getDetailPesanan());
+        if (detailBaru == null) return;
+
+        String hargaInput = JOptionPane.showInputDialog(this,
+                "Masukkan Total Harga Baru (Angka):", String.valueOf(pesananTerpilih.getTotalHarga()));
+        if (hargaInput == null) return;
+
+        int hargaBaru;
+        try {
+            hargaBaru = Integer.parseInt(hargaInput.replace(".", "").replace(",", "").trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Harga harus berupa angka murni!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         String[] pilihanStatus = {"Pending", "Ditolak", "Sedang Dijahit", "Selesai"};
-        String statusBaru = (String) javax.swing.JOptionPane.showInputDialog(this, 
-                "Ubah Status Pesanan untuk " + pelangganTerpilih.getNama() + ":", 
-                "Update Status Pesanan", 
-                javax.swing.JOptionPane.QUESTION_MESSAGE, 
-                null, pilihanStatus, pelangganTerpilih.getStatusPesanan());
+        String statusBaru = (String) JOptionPane.showInputDialog(this,
+                "Ubah Status Pesanan:", "Update Status",
+                JOptionPane.QUESTION_MESSAGE, null, pilihanStatus, pesananTerpilih.getStatusPesanan());
+        if (statusBaru == null) return;
 
-        // Jika penjahit menekan tombol cancel pada pop-up status
-        if (statusBaru == null) return; 
-
-        // 5. Tampilkan pilihan Pop-up untuk mengubah Status Pembayaran
-        String[] pilihanBayar = {"Belum Bayar", "Lunas"};
-        String bayarBaru = (String) javax.swing.JOptionPane.showInputDialog(this, 
-                "Ubah Status Pembayaran untuk " + pelangganTerpilih.getNama() + ":", 
-                "Update Status Pembayaran", 
-                javax.swing.JOptionPane.QUESTION_MESSAGE, 
-                null, pilihanBayar, pelangganTerpilih.getStatusPembayaran());
-
-        // Jika penjahit menekan tombol cancel pada pop-up pembayaran
+        String[] pilihanBayar = {"Belum Bayar", "Menunggu Konfirmasi (Transfer)", "Lunas (Transfer)", "Lunas (Tunai)"};
+        String bayarBaru = (String) JOptionPane.showInputDialog(this,
+                "Ubah Status Pembayaran:", "Update Pembayaran",
+                JOptionPane.QUESTION_MESSAGE, null, pilihanBayar, pesananTerpilih.getStatusPembayaran());
         if (bayarBaru == null) return;
 
-        // 6. Simpan perubahan ke dalam DataStore
-        pelangganTerpilih.setStatusPesanan(statusBaru);
-        pelangganTerpilih.setStatusPembayaran(bayarBaru);
+        try (Connection conn = Koneksi.getConnection()) {
+            String sql = "UPDATE pesanan SET detail_pesanan = ?, total_harga = ?, status_pesanan = ?, status_pembayaran = ? WHERE id = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, detailBaru.trim());
+            pst.setInt(2, hargaBaru);
+            pst.setString(3, statusBaru);
+            pst.setString(4, bayarBaru);
+            pst.setInt(5, pesananTerpilih.getId());
+            pst.executeUpdate();
 
-        // 7. Refresh tabel agar data di layar langsung ter-update
-        tampilkanData();
-        
-        javax.swing.JOptionPane.showMessageDialog(this, "Data Pelanggan berhasil diperbarui!");
-    }//GEN-LAST:event_jButton1ActionPerformed
-// Button Edit
+            tampilkanData();
+            JOptionPane.showMessageDialog(this, "Data pesanan berhasil diperbarui dan tersimpan ke database!");
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal mengupdate data pesanan: " + e.getMessage(),
+                    "Error Database",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    @Override
+    public void hapusPesanan() {
         int barisTerpilih = jTable1.getSelectedRow();
-        
         if (barisTerpilih == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                    "Silakan pilih/klik baris data pelanggan yang ingin dihapus!", 
-                    "Peringatan", 
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Silakan pilih baris data pesanan yang ingin dihapus!", "Peringatan", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        ModelPelanggan pelangganTerpilih = DataStore.listPelanggan.get(barisTerpilih);
+        ModelPelanggan pelangganTerpilih = penunjukPelanggan.get(barisTerpilih);
+        ModelPesanan pesananTerpilih = penunjukPesanan.get(barisTerpilih);
 
-        // Konfirmasi sebelum menghapus
-        int konfirmasi = javax.swing.JOptionPane.showConfirmDialog(this,
-                "Apakah anda yakin ingin menghapus data pelanggan '" + pelangganTerpilih.getNama() + "'?",
-                "Konfirmasi Hapus",
-                javax.swing.JOptionPane.YES_NO_OPTION);
-        
-        if (konfirmasi == javax.swing.JOptionPane.YES_OPTION) {
-            // Hapus data dari ArrayList DataStore berdasarkan indeks barisnya
-            DataStore.listPelanggan.remove(barisTerpilih);
-            
-            // Refresh tabel
-            tampilkanData();
-            
-            javax.swing.JOptionPane.showMessageDialog(this, "Data pelanggan berhasil dihapus!");
+        int konfirmasi = JOptionPane.showConfirmDialog(this,
+                "Apakah anda yakin ingin menghapus data pesanan '" + pesananTerpilih.getNamaPesanan() + "' milik " + pelangganTerpilih.getNama() + "?",
+                "Konfirmasi Hapus", JOptionPane.YES_NO_OPTION);
+
+        if (konfirmasi == JOptionPane.YES_OPTION) {
+            try (Connection conn = Koneksi.getConnection()) {
+                String sql = "DELETE FROM pesanan WHERE id = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setInt(1, pesananTerpilih.getId());
+                pst.executeUpdate();
+
+                tampilkanData();
+                JOptionPane.showMessageDialog(this, "Data pesanan berhasil dihapus dari database!");
+
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Gagal menghapus data pesanan: " + e.getMessage(),
+                        "Error Database",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
+    }
+
+// Button Edit
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        editPesanan();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        hapusPesanan();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // back login
         new Login().setVisible(true);
-        // close tab
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -229,24 +314,6 @@ public class Penjahit extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new Penjahit().setVisible(true));
     }
 
